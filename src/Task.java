@@ -8,7 +8,7 @@ public class Task {
         this.id = 0;
         this.name = name;
         this.description = description;
-        this.status = "";
+        this.status = "NEW";
     }
 
     @Override

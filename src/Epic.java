@@ -1,9 +1,12 @@
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class Epic extends Task {
+    private ArrayList<Subtask> subtasksIncluded;
 
     Epic(String name, String description) {
         super(name, description);
+        subtasksIncluded = new ArrayList<>();
     }
 
     @Override
@@ -13,6 +16,7 @@ public class Epic extends Task {
                 ", name='" + getName() + "'" +
                 ", description.length=" + getDescription().length() +
                 ", status='" + getStatus() + "'" +
+                ", subtasks.size=" + subtasksIncluded.size() +
                 "}";
     }
 
@@ -30,5 +34,21 @@ public class Epic extends Task {
     @Override
     public int hashCode() {
         return Objects.hash(getId(), getName(), getDescription(), getStatus());
+    }
+
+    public void addSubtask(Subtask subtask) {
+        this.subtasksIncluded.add(subtask);
+    }
+
+    public ArrayList<Subtask> getEpicSubtasks() {
+        return this.subtasksIncluded;
+    }
+
+    public void deleteAllEpicSubtasks() {
+        subtasksIncluded.clear();
+    }
+
+    public void deleteEpicSubtask(Subtask subtask) {
+        subtasksIncluded.remove(subtask);
     }
 }
