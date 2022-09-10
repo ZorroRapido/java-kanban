@@ -1,7 +1,14 @@
+package managers;
+
+import tasks.Epic;
+import tasks.Status;
+import tasks.Subtask;
+import tasks.Task;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
+import java.util.LinkedList;
 
 public class InMemoryTaskManager implements TaskManager {
     private int counter;
@@ -74,7 +81,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Subtask getSubtaskById(int id) {
         if (subtasks.containsKey(id)) {
-            historyManager.add(epics.get(id));
+            historyManager.add(subtasks.get(id));
             return subtasks.get(id);
         } else {
             return null;
@@ -170,7 +177,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public List<Task> getHistory() {
+    public LinkedList<Task> getHistory() {
         return historyManager.getHistory();
     }
 

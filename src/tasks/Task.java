@@ -1,10 +1,12 @@
+package tasks;
+
 public class Task {
     private int id;
     private String name;
     private String description;
     private Status status;
 
-    Task(String name, String description) {
+    public Task(String name, String description) {
         this.id = 0;
         this.name = name;
         this.description = description;
