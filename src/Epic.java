@@ -4,7 +4,7 @@ import java.util.Objects;
 public class Epic extends Task {
     private ArrayList<Subtask> subtasksIncluded;
 
-    Epic(String name, String description) {
+    public Epic(String name, String description) {
         super(name, description);
         subtasksIncluded = new ArrayList<>();
     }
@@ -15,7 +15,7 @@ public class Epic extends Task {
                 "id=" + getId() +
                 ", name='" + getName() + "'" +
                 ", description.length=" + getDescription().length() +
-                ", status='" + getStatus() + "'" +
+                ", status='" + getStatus().toString() + "'" +
                 ", subtasks.size=" + subtasksIncluded.size() +
                 "}";
     }

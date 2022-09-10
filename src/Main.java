@@ -1,92 +1,34 @@
 public class Main {
 
     public static void main(String[] args) {
-        Manager manager = new Manager();
+        TaskManager manager = Managers.getDefault();
 
-        Task firstTask = new Task("Купить билеты в Мексику", "Описание З-1");
-        Task secondTask = new Task("Заказать новое колесо для машины", "Описание З-2");
+        Task task = new Task("Купить билеты в Мексику", "Описание З-1");
+        Epic epic = new Epic("Переезд", "Нужно завершить до 31 августа");
+        Subtask subtask = new Subtask("Собрать коробки", "Описание П-1", epic);
 
-        Epic firstEpic = new Epic("Переезд", "Нужно завершить до 31 августа");
-        Subtask firstSubtask = new Subtask("Собрать коробки", "Описание П-1", firstEpic);
-        Subtask secondSubtask = new Subtask("Упаковать кошку", "Описание П-2", firstEpic);
+        manager.createTask(task);
+        manager.createEpic(epic);
+        manager.createSubtask(subtask);
 
-        Epic secondEpic = new Epic("Важный эпик 2", "Описание Э-2");
-        Subtask thirdSubtask = new Subtask("Подзадача 3", "Описание П-3", secondEpic);
+        System.out.println("История до просмотра задач:");
+        System.out.println(manager.getHistory());
 
-        manager.createTask(firstTask);
-        manager.createTask(secondTask);
+        System.out.println("----\nИстория после просмотра обычной задачи:");
+        manager.getTaskById(task.getId());
+        System.out.println(manager.getHistory());
 
-        manager.createEpic(firstEpic);
-        manager.createSubtask(firstSubtask);
-        manager.createSubtask(secondSubtask);
+        System.out.println("----\nИстория после просмотра эпика:");
+        manager.getEpicById(epic.getId());
+        System.out.println(manager.getHistory());
 
-        manager.createEpic(secondEpic);
-        manager.createSubtask(thirdSubtask);
+        System.out.println("----\nИстория после просмотра подзадачи:");
+        manager.getSubtaskById(subtask.getId());
+        System.out.println(manager.getHistory());
 
-        System.out.println("----");
-        System.out.println("Вывод различных типов задач");
-        System.out.println("Обычные задачи:");
-        System.out.println(manager.getTasks());
-        System.out.println("Эпики:");
-        System.out.println(manager.getEpics());
-        System.out.println("Подзадачи:");
-        System.out.println(manager.getSubtasks());
-        System.out.println("----");
-
-        System.out.println("Изменение статуса обычной задачи firstTask (id=" + firstTask.getId() + ") (NEW -> " +
-                "IN_PROGRESS -> DONE)");
-        System.out.println(manager.getTaskById(firstTask.getId()));
-        firstTask.setStatus("IN_PROGRESS");
-        manager.updateTask(firstTask);
-        System.out.println(manager.getTaskById(firstTask.getId()));
-        firstTask.setStatus("DONE");
-        manager.updateTask(firstTask);
-        System.out.println(manager.getTaskById(firstTask.getId()));
-        System.out.println("----");
-
-        System.out.println("Изменение статуса эпика firstEpic (id=" + firstEpic.getId() + ") (NEW -> IN_PROGRESS -> " +
-                "DONE) посредством обновления двух его подзадач");
-        System.out.println("Эпик: " + manager.getEpicById(firstEpic.getId()));
-        System.out.println("Подзадачи: " + manager.getSubtasksByEpic(firstEpic));
-        firstSubtask.setStatus("IN_PROGRESS");
-        manager.updateSubtask(firstSubtask);
-        System.out.println("Эпик: " + manager.getEpicById(firstEpic.getId()));
-        System.out.println("Подзадачи: " + manager.getSubtasksByEpic(firstEpic));
-        secondSubtask.setStatus("DONE");
-        manager.updateSubtask(secondSubtask);
-        System.out.println("Эпик: " + manager.getEpicById(firstEpic.getId()));
-        System.out.println("Подзадачи: " + manager.getSubtasksByEpic(firstEpic));
-        firstSubtask.setStatus("DONE");
-        manager.updateSubtask(firstSubtask);
-        System.out.println("Эпик: " + manager.getEpicById(firstEpic.getId()));
-        System.out.println("Подзадачи: " + manager.getSubtasksByEpic(firstEpic));
-        System.out.println("----");
-
-        System.out.println("Удаление обычной задачи firstTask (id=" + firstTask.getId() + ")");
-        System.out.println("До: " + manager.getTasks());
-        manager.deleteTask(firstTask.getId());
-        System.out.println("После: " + manager.getTasks());
-        System.out.println("----");
-
-        System.out.println("Удаление эпика firstEpic (id=" + firstEpic.getId() + ")");
-        System.out.println("До:");
-        System.out.println(manager.getEpicById(firstEpic.getId()));
-        System.out.println(manager.getSubtasksByEpic(firstEpic));
-        manager.deleteEpic(firstEpic.getId());
-        System.out.println("После:");
-        System.out.println(manager.getEpicById(firstEpic.getId()));
-        System.out.println(manager.getSubtasksByEpic(firstEpic));
-        System.out.println("----");
-
-        System.out.println("Удаление подзадачи thirdSubtask (id=" + thirdSubtask.getId() + ") из эпика secondEpic " +
-                        "(id=" + secondEpic.getId() + ")");
-        System.out.println("До:");
-        System.out.println(manager.getEpicById(secondEpic.getId()));
-        System.out.println(manager.getSubtasksByEpic(secondEpic));
-        manager.deleteSubtask(thirdSubtask.getId());
-        System.out.println("После:");
-        System.out.println(manager.getEpicById(secondEpic.getId()));
-        System.out.println(manager.getSubtasksByEpic(secondEpic));
-        System.out.println("----");
+        System.out.println("----\nИстория после просмотра 11-ой по счёту задачи:");
+        for (int i = 0; i <= 7; i++)
+            manager.getEpicById(epic.getId());
+        System.out.println(manager.getHistory());
     }
 }
