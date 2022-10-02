@@ -120,8 +120,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateTask(Task updatedTask) {
-        if (tasks.containsKey(updatedTask.getId()))
+        if (tasks.containsKey(updatedTask.getId())) {
             tasks.put(updatedTask.getId(), updatedTask);
+        }
     }
 
     @Override
@@ -203,9 +204,9 @@ public class InMemoryTaskManager implements TaskManager {
         int newCounter = 0;
 
         for (Subtask subtask : epicSubtasks) {
-            if (subtask.getStatus().equals(Status.DONE)) {
+            if (Status.DONE.equals(subtask.getStatus())) {
                 doneCounter++;
-            } else if (subtask.getStatus().equals(Status.NEW)) {
+            } else if (Status.NEW.equals(subtask.getStatus())) {
                 newCounter++;
             }
         }

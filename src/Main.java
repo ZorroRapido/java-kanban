@@ -52,6 +52,13 @@ public class Main {
         manager.getSubtaskById(firstSubtask.getId());
         System.out.println(manager.getHistory());
 
+        System.out.println("----\nИстория после 3-х просмотров эпика firstEpic (id = " + firstEpic.getId() +
+                "):");
+        manager.getEpicById(firstEpic.getId());
+        manager.getEpicById(firstEpic.getId());
+        manager.getEpicById(firstEpic.getId());
+        System.out.println(manager.getHistory());
+
         System.out.println("----\nИстория после 2-х просмотров подзадачи thirdSubtask (id = " + thirdSubtask.getId() +
                 "):");
         manager.getSubtaskById(thirdSubtask.getId());

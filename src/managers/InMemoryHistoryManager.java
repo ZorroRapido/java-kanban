@@ -17,8 +17,9 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void add(Task task) {
-        if (taskIdToNode.containsKey(task.getId()))
+        if (taskIdToNode.containsKey(task.getId())) {
             remove(task.getId());
+        }
 
         history.linkLast(task);
         taskIdToNode.put(task.getId(), history.tail);
@@ -26,8 +27,9 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void remove(int id) {
-        if (taskIdToNode.containsKey(id))
+        if (taskIdToNode.containsKey(id)) {
             history.removeNode(taskIdToNode.get(id));
+        }
     }
 
     @Override
@@ -49,32 +51,35 @@ public class InMemoryHistoryManager implements HistoryManager {
             final Node<Task> newTail = new Node<>(oldTail, task, null);
             tail = newTail;
 
-            if (oldTail == null)
+            if (oldTail == null) {
                 head = newTail;
-            else
-                oldTail.next = newTail;
+            } else {
+                oldTail.setNext(newTail);
+            }
         }
 
         public ArrayList<Task> getTasks() {
             Node<Task> startPoint = tail;
             ArrayList<Task> tasks = new ArrayList<>();
             while (startPoint != null) {
-                tasks.add(startPoint.data);
-                startPoint = startPoint.prev;
+                tasks.add(startPoint.getData());
+                startPoint = startPoint.getPrev();
             }
             return tasks;
         }
 
         public void removeNode(Node<Task> node) {
-            if (node.prev != null)
-                node.prev.next = node.next;
-            else
-                head = node.next;
+            if (node.getPrev() != null) {
+                node.getPrev().setNext(node.getNext());
+            } else {
+                head = node.getNext();
+            }
 
-            if (node.next != null)
-                node.next.prev = node.prev;
-            else
-                tail = node.prev;
+            if (node.getNext() != null) {
+                node.getNext().setPrev(node.getPrev());
+            } else {
+                tail = node.getPrev();
+            }
         }
     }
 }
