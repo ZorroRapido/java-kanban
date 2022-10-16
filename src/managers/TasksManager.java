@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public interface TaskManager {
+public interface TasksManager {
     HashMap<Integer, Task> getTasks();
 
     HashMap<Integer, Epic> getEpics();

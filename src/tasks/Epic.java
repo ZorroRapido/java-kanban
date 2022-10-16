@@ -8,13 +8,19 @@ public class Epic extends Task {
 
     public Epic(String name, String description) {
         super(name, description);
+        setType(TaskType.EPIC);
         subtasksIncluded = new ArrayList<>();
+    }
+
+    public Epic(Task task) {
+        this(task.getName(), task.getDescription());
     }
 
     @Override
     public String toString() {
         return "Epic{" +
                 "id=" + getId() +
+                ", type='" + getType() + "'" +
                 ", name='" + getName() + "'" +
                 ", description.length=" + getDescription().length() +
                 ", status='" + getStatus().toString() + "'" +

@@ -1,5 +1,5 @@
 import managers.Managers;
-import managers.TaskManager;
+import managers.TasksManager;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
@@ -7,7 +7,7 @@ import tasks.Task;
 public class Main {
 
     public static void main(String[] args) {
-        TaskManager manager = Managers.getDefault();
+        TasksManager manager = Managers.getDefault();
 
         Task firstTask = new Task("Купить билеты в Мексику", "Описание 1");
         Task secondTask = new Task("Положить деньги на карту 'Тройка'", "Описание 2");
