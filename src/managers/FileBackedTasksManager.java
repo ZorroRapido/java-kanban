@@ -4,9 +4,6 @@ import tasks.Task;
 import tasks.Epic;
 import tasks.Subtask;
 
-import tasks.TaskType;
-import tasks.Status;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
@@ -15,12 +12,15 @@ import java.io.BufferedReader;
 
 import java.io.IOException;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class FileBackedTasksManager extends InMemoryTasksManager implements TasksManager {
+import static managers.CSVFormat.historyFromString;
+import static managers.CSVFormat.historyToString;
+import static managers.CSVFormat.fromString;
+
+public class FileBackedTasksManager extends InMemoryTasksManager {
     private final File file;
 
     public FileBackedTasksManager(File file) {
@@ -40,7 +40,6 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
         firstManager.createSubtask(testSubtask);
 
         firstManager.getTaskById(testTask.getId());
-
         firstManager.getEpicById(testEpic.getId());
 
         System.out.println("История 1-го менеджера:");
@@ -52,20 +51,20 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
         System.out.println(secondManager.getHistory());
     }
 
-    public void save() {
+    private void save() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
             bw.write("id,type,name,status,description,epic\n");
 
             for (Task task : tasks.values()) {
-                bw.write(toString(task) + "\n");
+                bw.write(CSVFormat.toString(task) + "\n");
             }
 
             for (Epic epic : epics.values()) {
-                bw.write(toString(epic) + "\n");
+                bw.write(CSVFormat.toString(epic) + "\n");
             }
 
             for (Subtask subtask : subtasks.values()) {
-                bw.write(toString(subtask) + "\n");
+                bw.write(CSVFormat.toString(subtask) + "\n");
             }
 
             bw.write("\n");
@@ -196,73 +195,6 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
         return subtasksToReturn;
     }
 
-    private String toString(Task task) {
-        String outputString = String.join(",", Integer.toString(task.getId()), task.getType().toString(),
-                task.getName(), task.getStatus().toString(), task.getDescription());
-
-        switch (task.getType()) {
-            case TASK:
-            case EPIC:
-                return outputString;
-            case SUBTASK:
-                return outputString + "," + ((Subtask) task).getEpic().getId();
-            default:
-                return null;
-        }
-    }
-
-    public static Task fromString(String value, FileBackedTasksManager manager) {
-        String[] info = value.split(",");
-
-        if (TaskType.TASK.toString().equals(info[1])) {
-            Task newTask = new Task(info[2], info[4]);
-            newTask.setId(Integer.parseInt(info[0]));
-            newTask.setType(TaskType.valueOf(info[1]));
-            newTask.setStatus(Status.valueOf(info[3]));
-            return newTask;
-        } else if (TaskType.EPIC.toString().equals(info[1])) {
-            Task newEpic = new Epic(info[2], info[4]);
-            newEpic.setId(Integer.parseInt(info[0]));
-            newEpic.setType(TaskType.valueOf(info[1]));
-            newEpic.setStatus(Status.valueOf(info[3]));
-            return newEpic;
-        } else if (TaskType.SUBTASK.toString().equals(info[1])) {
-            Task newSubtask = new Subtask(info[2], info[4], manager.epics.get(Integer.parseInt(info[5])));
-            newSubtask.setId(Integer.parseInt(info[0]));
-            newSubtask.setType(TaskType.valueOf(info[1]));
-            newSubtask.setStatus(Status.valueOf(info[3]));
-            return newSubtask;
-        }
-
-        return null;
-    }
-
-    public static String historyToString(HistoryManager historyManager) {
-        List<Task> historyTasks = historyManager.getHistory();
-        String[] arrayOfIds = new String[historyTasks.size()];
-
-        int counter = 0;
-        for (Task task : historyTasks) {
-            arrayOfIds[counter] = Integer.toString(task.getId());
-            counter++;
-        }
-
-        return String.join(",", arrayOfIds);
-    }
-
-    public static List<Integer> historyFromString(String value) {
-        List<Integer> list = new ArrayList<>();
-        try {
-            String[] ids = value.split(",");
-            for (String id : ids) {
-                list.add(Integer.parseInt(id));
-            }
-        } catch (NullPointerException e) {
-            System.out.println("Ошибка при обработке строки с историей! Возможно она пуста!");
-        }
-        return list;
-    }
-
     public static FileBackedTasksManager loadFromFile(File file) throws IOException {
         FileBackedTasksManager manager = new FileBackedTasksManager(file);
 
@@ -291,16 +223,17 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
                     List<Integer> ids = historyFromString(historyLine);
 
                     for (Integer id : ids) {
-                        if (manager.tasks.containsKey(id)) {
-                            manager.historyManager.add(manager.tasks.get(id));
-                        } else if (manager.epics.containsKey(id)) {
-                            manager.historyManager.add(manager.epics.get(id));
-                        } else if (manager.subtasks.containsKey(id)) {
-                            manager.historyManager.add(manager.subtasks.get(id));
+                        if (manager.getTasks().containsKey(id)) {
+                            manager.historyManager.add(manager.getTasks().get(id));
+                        } else if (manager.getEpics().containsKey(id)) {
+                            manager.historyManager.add(manager.getEpics().get(id));
+                        } else if (manager.getSubtasks().containsKey(id)) {
+                            manager.historyManager.add(manager.getSubtasks().get(id));
                         }
                     }
                 }
             }
+            manager.save();
             return manager;
         }
     }
