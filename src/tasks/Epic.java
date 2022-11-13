@@ -1,15 +1,25 @@
 package tasks;
 
+import javax.swing.text.html.Option;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public class Epic extends Task {
     private ArrayList<Subtask> subtasksIncluded;
+    private LocalDateTime endTime;
 
     public Epic(String name, String description) {
         super(name, description);
         setType(TaskType.EPIC);
         subtasksIncluded = new ArrayList<>();
+        endTime = getEndTime();
     }
 
     public Epic(Task task) {
@@ -25,6 +35,8 @@ public class Epic extends Task {
                 ", description.length=" + getDescription().length() +
                 ", status='" + getStatus().toString() + "'" +
                 ", subtasks.size=" + subtasksIncluded.size() +
+                ", startTime='" + getStartTime() + "'" +
+                ", duration=" + getDuration() +
                 "}";
     }
 
@@ -48,7 +60,7 @@ public class Epic extends Task {
         this.subtasksIncluded.add(subtask);
     }
 
-    public ArrayList<Subtask> getEpicSubtasks() {
+    public List<Subtask> getEpicSubtasks() {
         return this.subtasksIncluded;
     }
 
@@ -58,5 +70,45 @@ public class Epic extends Task {
 
     public void deleteEpicSubtask(Subtask subtask) {
         subtasksIncluded.remove(subtask);
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    @Override
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void updateEndTime() {
+        if (getEpicSubtasks().isEmpty()) {
+            setStartTime(null);
+            setDuration(0);
+            setEndTime(null);
+        } else {
+            List<Subtask> subtasks = getEpicSubtasks();
+            LocalDateTime possibleStartTime = subtasks.get(0).getStartTime();
+            LocalDateTime possibleEndTime = subtasks.get(0).getEndTime();
+
+            for (Subtask subtask : subtasks) {
+                if (subtask.getStartTime() != null) {
+                    if (subtask.getStartTime().isBefore(possibleStartTime)) {
+                        possibleStartTime = subtask.getStartTime();
+                    }
+
+                    if (subtask.getEndTime().isAfter(possibleEndTime)) {
+                        possibleEndTime = subtask.getEndTime();
+                    }
+                }
+            }
+
+            setStartTime(possibleStartTime);
+
+            if (possibleStartTime != null) {
+                setDuration(Duration.between(possibleStartTime, possibleEndTime).toMinutes());
+            }
+            setEndTime(possibleEndTime);
+        }
     }
 }

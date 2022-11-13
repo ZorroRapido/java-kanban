@@ -12,6 +12,7 @@ import java.io.BufferedReader;
 
 import java.io.IOException;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,9 +32,11 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
         File file = new File("data.csv");
         FileBackedTasksManager firstManager = new FileBackedTasksManager(file);
 
-        Task testTask = new Task("Купить билеты в Мексику", "Описание 1");
+        Task testTask = new Task("Купить билеты в Мексику", "Описание 1", LocalDateTime.of(2022,
+                11, 12, 18, 16), 15);
         Epic testEpic = new Epic("Переезд", "Нужно завершить до 31 августа");
-        Subtask testSubtask = new Subtask("Собрать коробки", "Описание П-1", testEpic);
+        Subtask testSubtask = new Subtask("Собрать коробки", "Описание П-1", LocalDateTime.of(2022,
+                11, 12, 18, 16), 15, testEpic);
 
         firstManager.createTask(testTask);
         firstManager.createEpic(testEpic);
@@ -53,7 +56,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
 
     private void save() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
-            bw.write("id,type,name,status,description,epic\n");
+            bw.write("id,type,name,status,description,start_time,duration,epic\n");
 
             for (Task task : tasks.values()) {
                 bw.write(CSVFormat.toString(task) + "\n");

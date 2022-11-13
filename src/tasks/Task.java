@@ -1,11 +1,18 @@
 package tasks;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Optional;
+
 public class Task {
     private int id;
     private TaskType type;
     private String name;
     private String description;
     private Status status;
+    private long duration;
+    private LocalDateTime startTime;
 
     public Task(String name, String description) {
         this.id = 0;
@@ -13,6 +20,17 @@ public class Task {
         this.name = name;
         this.description = description;
         this.status = Status.NEW;
+        this.duration = 0;
+    }
+
+    public Task(String name, String description, LocalDateTime startTime, int duration) {
+        this.id = 0;
+        this.type = TaskType.TASK;
+        this.name = name;
+        this.description = description;
+        this.status = Status.NEW;
+        this.startTime = startTime;
+        this.duration = duration;
     }
 
     @Override
@@ -23,6 +41,8 @@ public class Task {
                 ", name='" + name + "'" +
                 ", description.length=" + description.length() +
                 ", status='" + status.toString() + "'" +
+                ", startTime='" + startTime + "'" +
+                ", duration=" + duration +
                 "}";
     }
 
@@ -74,5 +94,28 @@ public class Task {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        if (startTime != null) {
+            return startTime.plus(Duration.of(duration, ChronoUnit.MINUTES));
+        }
+        return null;
     }
 }
