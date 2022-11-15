@@ -54,7 +54,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
         System.out.println(secondManager.getHistory());
     }
 
-    private void save() {
+    public void save() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
             bw.write("id,type,name,status,description,start_time,duration,epic\n");
 

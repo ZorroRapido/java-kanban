@@ -1,11 +1,20 @@
-package tasks;
-
+import jdk.jfr.Description;
 import managers.TasksManager;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import tasks.Epic;
+import tasks.Status;
+import tasks.Subtask;
+import tasks.Task;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public abstract class TasksManagerTest<T extends TasksManager> {
     protected final T manager;
@@ -25,7 +34,7 @@ public abstract class TasksManagerTest<T extends TasksManager> {
     public void shouldReturnNewStatusForEmptyEpic() {
         Epic epic = new Epic(EPIC_NAME, EPIC_DESC);
         manager.createEpic(epic);
-        assertEquals(Status.NEW, epic.getStatus(), "Неверный статус.");
+        Assertions.assertEquals(Status.NEW, epic.getStatus(), "Неверный статус.");
     }
 
     @Test
@@ -491,4 +500,245 @@ public abstract class TasksManagerTest<T extends TasksManager> {
         assertNull(manager.getSubtaskById(id));
         assertEquals(0, manager.getSubtasks().size(), "Неверное количество подзадач.");
     }
+
+    // Тесты на работу с историей ...
+
+    @Test
+    @Description("Создание двух пересекающихся задач, когда первая начинается после второй, но заканчивается раньше " +
+            "её завершения")
+    public void createIntersectingTasksFirstTypeIntersection() {
+        Task firstTask = new Task(TASK_NAME, TASK_DESC, LocalDateTime.of(2022, 11, 15, 10,
+                0), 30);
+        Task secondTask = new Task(TASK_NAME, TASK_DESC, LocalDateTime.of(2022, 11, 15, 10,
+                15), 5);
+
+        manager.createTask(firstTask);
+        manager.createTask(secondTask);
+
+        assertEquals(1, manager.getTasks().size(), "Неверное количество задач.");
+        assertEquals(firstTask, manager.getTasks().get(0), "В список добавлена неверная задача.");
+    }
+
+    @Test
+    @Description("Создание двух пересекающихся задач, когда первая начинается до старта второй и заканчивается раньше " +
+            "её завершения")
+    public void createIntersectingTasksSecondTypeIntersection() {
+        Task firstTask = new Task(TASK_NAME, TASK_DESC, LocalDateTime.of(2022, 11, 15, 15,
+                0), 10);
+        Task secondTask = new Task(TASK_NAME, TASK_DESC, LocalDateTime.of(2022, 11, 15, 15,
+                5), 10);
+
+        manager.createTask(firstTask);
+        manager.createTask(secondTask);
+
+        assertEquals(1, manager.getTasks().size(), "Неверное количество задач.");
+        assertEquals(firstTask, manager.getTasks().get(0), "В список добавлена неверная задача.");
+    }
+
+    @Test
+    @Description("Создание двух пересекающихся задач, когда первая начинается после старта второй и заканчивается после " +
+            "её завершения")
+    public void createIntersectingTasksThirdTypeIntersection() {
+        Task firstTask = new Task(TASK_NAME, TASK_DESC, LocalDateTime.of(2022, 11, 15, 15,
+                5), 10);
+        Task secondTask = new Task(TASK_NAME, TASK_DESC, LocalDateTime.of(2022, 11, 15, 15,
+                0), 10);
+
+        manager.createTask(firstTask);
+        manager.createTask(secondTask);
+
+        assertEquals(1, manager.getTasks().size(), "Неверное количество задач.");
+        assertEquals(firstTask, manager.getTasks().get(0), "В список добавлена неверная задача.");
+    }
+
+    @Test
+    public void createNonintersectingTasks() {
+        Task firstTask = new Task(TASK_NAME, TASK_DESC, LocalDateTime.of(2022, 11, 15, 15,
+                5), 10);
+        Task secondTask = new Task(TASK_NAME, TASK_DESC, LocalDateTime.of(2022, 11, 15, 16,
+                0), 10);
+
+        manager.createTask(firstTask);
+        manager.createTask(secondTask);
+
+        assertEquals(2, manager.getTasks().size(), "Неверное количество задач.");
+        assertEquals(firstTask, manager.getTasks().get(0), "В список добавлена неверная задача.");
+        assertEquals(secondTask, manager.getTasks().get(1), "В список добавлена неверная задача.");
+    }
+
+    @Test
+    @Description("Создание двух пересекающихся подзадач, когда первая начинается после второй, но заканчивается " +
+            "раньше её завершения")
+    public void createIntersectingSubtasksFirstTypeIntersection() {
+        Epic epic = new Epic(EPIC_NAME, EPIC_DESC);
+
+        Subtask firstSubtask = new Subtask(SUBTASK_NAME, SUBTASK_DESC, LocalDateTime.of(2022, 11, 15,
+                10, 0), 30, epic);
+        Subtask secondSubtask = new Subtask(SUBTASK_NAME, SUBTASK_DESC, LocalDateTime.of(2022, 11, 15,
+                10, 15), 5, epic);
+
+        manager.createEpic(epic);
+        manager.createSubtask(firstSubtask);
+        manager.createSubtask(secondSubtask);
+
+        assertEquals(1, manager.getSubtasks().size(), "Неверное количество подзадач.");
+        assertEquals(firstSubtask, manager.getSubtasks().get(1), "В список добавлена неверная подзадача.");
+    }
+
+    @Test
+    @Description("Создание двух пересекающихся подзадач, когда первая начинается до старта второй и заканчивается " +
+            "раньше её завершения")
+    public void createIntersectingSubtasksSecondTypeIntersection() {
+        Epic epic = new Epic(EPIC_NAME, EPIC_DESC);
+
+        Subtask firstSubtask = new Subtask(SUBTASK_NAME, SUBTASK_DESC, LocalDateTime.of(2022, 11, 15,
+                15, 0), 10, epic);
+        Subtask secondSubtask = new Subtask(SUBTASK_NAME, SUBTASK_DESC, LocalDateTime.of(2022, 11, 15,
+                15, 5), 10, epic);
+
+        manager.createEpic(epic);
+        manager.createSubtask(firstSubtask);
+        manager.createSubtask(secondSubtask);
+
+        assertEquals(1, manager.getSubtasks().size(), "Неверное количество подзадач.");
+        assertEquals(firstSubtask, manager.getSubtasks().get(1), "В список добавлена неверная подзадача.");
+    }
+
+    @Test
+    @Description("Создание двух пересекающихся подзадач, когда первая начинается после старта второй и заканчивается " +
+            "после её завершения")
+    public void createIntersectingSubtasksThirdTypeIntersection() {
+        Epic epic = new Epic(EPIC_NAME, EPIC_DESC);
+
+        Subtask firstSubtask = new Subtask(SUBTASK_NAME, SUBTASK_DESC, LocalDateTime.of(2022, 11, 15,
+                15, 5), 10, epic);
+        Subtask secondSubtask = new Subtask(SUBTASK_NAME, SUBTASK_DESC, LocalDateTime.of(2022, 11, 15,
+                15, 0), 10, epic);
+
+        manager.createEpic(epic);
+        manager.createSubtask(firstSubtask);
+        manager.createSubtask(secondSubtask);
+
+        assertEquals(1, manager.getSubtasks().size(), "Неверное количество подзадач.");
+        assertEquals(firstSubtask, manager.getSubtasks().get(1), "В список добавлена неверная подзадача.");
+    }
+
+    @Test
+    public void createNonintersectingSubtasks() {
+        Epic epic = new Epic(EPIC_NAME, EPIC_DESC);
+
+        Subtask firstSubtask = new Subtask(SUBTASK_NAME, SUBTASK_DESC, LocalDateTime.of(2022, 11, 15, 15,
+                5), 10, epic);
+        Subtask secondSubtask = new Subtask(SUBTASK_NAME, SUBTASK_DESC, LocalDateTime.of(2022, 11, 15, 16,
+                0), 10, epic);
+
+        manager.createEpic(epic);
+        manager.createSubtask(firstSubtask);
+        manager.createSubtask(secondSubtask);
+
+        assertEquals(2, manager.getSubtasks().size(), "Неверное количество подзадач.");
+        assertEquals(firstSubtask, manager.getSubtasks().get(firstSubtask.getId()), "В список добавлена неверная подзадача.");
+        assertEquals(secondSubtask, manager.getSubtasks().get(secondSubtask.getId()), "В список добавлена неверная подзадача.");
+    }
+
+    @Test
+    public void getHistory() {
+        Task task = new Task(TASK_NAME, TASK_DESC);
+        Epic epic = new Epic(EPIC_NAME, EPIC_DESC);
+        Subtask subtask = new Subtask(SUBTASK_NAME, SUBTASK_DESC, epic);
+
+        manager.createTask(task);
+        manager.createEpic(epic);
+        manager.createSubtask(subtask);
+
+        manager.getTaskById(task.getId());
+        manager.getSubtaskById(subtask.getId());
+
+        final List<Task> history = manager.getHistory();
+        assertEquals(2, history.size(), "В историю попали лишние записи.");
+    }
+
+    @Test
+    public void getHistoryForEmptyTaskList() {
+        assertTrue(manager.getHistory().isEmpty(), "История непустая.");
+    }
+
+    @Test
+    public void getHistoryAfterDoubleCalling() {
+        Task task = new Task(TASK_NAME, TASK_DESC);
+
+        manager.createTask(task);
+        manager.getTaskById(task.getId());
+        manager.getTaskById(task.getId());
+
+        final List<Task> history = manager.getHistory();
+        assertEquals(1, history.size(), "Неверный размер истории.");
+        assertEquals(task, history.get(0), "Неверная задача в истории.");
+    }
+
+    @Test
+    public void getHistoryAfterTaskDeleteBeginning() {
+        Task task = new Task(TASK_NAME, TASK_DESC);
+        Epic epic = new Epic(EPIC_NAME, EPIC_DESC);
+        Subtask subtask = new Subtask(SUBTASK_NAME, SUBTASK_DESC, epic);
+
+        manager.createEpic(epic);
+        manager.createSubtask(subtask);
+        manager.createTask(task);
+
+        manager.getTaskById(task.getId());
+        manager.getSubtaskById(subtask.getId());
+
+        manager.deleteTask(task.getId());
+
+        final List<Task> history = manager.getHistory();
+        assertEquals(1, history.size(), "Неверный размер истории.");
+        assertEquals(subtask, history.get(0), "Неверная подзадача в истории.");
+    }
+
+    @Test
+    public void getHistoryAfterTaskDeleteMiddle() {
+        Task task = new Task(TASK_NAME, TASK_DESC);
+        Epic epic = new Epic(EPIC_NAME, EPIC_DESC);
+        Subtask subtask = new Subtask(SUBTASK_NAME, SUBTASK_DESC, epic);
+
+        manager.createEpic(epic);
+        manager.createSubtask(subtask);
+        manager.createTask(task);
+
+        manager.getEpicById(epic.getId());
+        manager.getTaskById(task.getId());
+        manager.getSubtaskById(subtask.getId());
+
+        manager.deleteTask(task.getId());
+
+        final List<Task> history = manager.getHistory();
+        assertEquals(2, history.size(), "Неверный размер истории.");
+        assertEquals(epic, history.get(1), "Неверный эпик в истории.");
+        assertEquals(subtask, history.get(0), "Неверная подзадача в истории.");
+    }
+
+    @Test
+    public void getHistoryAfterTaskDeleteEnd() {
+        Task task = new Task(TASK_NAME, TASK_DESC);
+        Epic epic = new Epic(EPIC_NAME, EPIC_DESC);
+        Subtask subtask = new Subtask(SUBTASK_NAME, SUBTASK_DESC, epic);
+
+        manager.createEpic(epic);
+        manager.createSubtask(subtask);
+        manager.createTask(task);
+
+        manager.getEpicById(epic.getId());
+        manager.getTaskById(task.getId());
+        manager.getSubtaskById(subtask.getId());
+
+        manager.deleteSubtask(subtask.getId());
+
+        final List<Task> history = manager.getHistory();
+        assertEquals(2, history.size(), "Неверный размер истории.");
+        assertEquals(epic, history.get(1), "Неверный эпик в истории.");
+        assertEquals(task, history.get(0), "Неверная задача в истории.");
+    }
+
+
 }

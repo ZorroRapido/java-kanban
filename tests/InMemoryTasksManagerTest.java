@@ -1,7 +1,14 @@
-package tasks;
-
+import jdk.jfr.Description;
 import managers.InMemoryTasksManager;
 import org.junit.jupiter.api.Test;
+import tasks.Epic;
+import tasks.Subtask;
+import tasks.Task;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class InMemoryTasksManagerTest extends TasksManagerTest<InMemoryTasksManager> {
     public InMemoryTasksManagerTest() {
@@ -234,5 +241,89 @@ public class InMemoryTasksManagerTest extends TasksManagerTest<InMemoryTasksMana
     @Test
     public void deleteNonexistentSubtask() {
         super.deleteNonexistentSubtask();
+    }
+
+    @Override
+    @Test
+    public void createIntersectingTasksFirstTypeIntersection() {
+        super.createIntersectingTasksFirstTypeIntersection();
+    }
+
+    @Override
+    @Test
+    public void createIntersectingTasksSecondTypeIntersection() {
+        super.createIntersectingTasksSecondTypeIntersection();
+    }
+
+    @Override
+    @Test
+    public void createIntersectingTasksThirdTypeIntersection() {
+        super.createIntersectingTasksThirdTypeIntersection();
+    }
+
+    @Override
+    @Test
+    public void createNonintersectingTasks() {
+        super.createNonintersectingTasks();
+    }
+
+    @Override
+    @Test
+    public void createIntersectingSubtasksFirstTypeIntersection() {
+        super.createIntersectingSubtasksFirstTypeIntersection();
+    }
+
+    @Override
+    @Test
+    public void createIntersectingSubtasksSecondTypeIntersection() {
+        super.createIntersectingSubtasksSecondTypeIntersection();
+    }
+
+    @Override
+    @Test
+    public void createIntersectingSubtasksThirdTypeIntersection() {
+        super.createIntersectingSubtasksThirdTypeIntersection();
+    }
+
+    @Override
+    @Test
+    public void createNonintersectingSubtasks() {
+        super.createNonintersectingSubtasks();
+    }
+
+    @Override
+    @Test
+    public void getHistory() {
+        super.getHistory();
+    }
+
+    @Override
+    @Test
+    public void getHistoryForEmptyTaskList() {
+        super.getHistoryForEmptyTaskList();
+    }
+
+    @Override
+    @Test
+    public void getHistoryAfterDoubleCalling() {
+        super.getHistoryAfterDoubleCalling();
+    }
+
+    @Override
+    @Test
+    public void getHistoryAfterTaskDeleteBeginning() {
+        super.getHistoryAfterTaskDeleteBeginning();
+    }
+
+    @Override
+    @Test
+    public void getHistoryAfterTaskDeleteMiddle() {
+        super.getHistoryAfterTaskDeleteMiddle();
+    }
+
+    @Override
+    @Test
+    public void getHistoryAfterTaskDeleteEnd() {
+        super.getHistoryAfterTaskDeleteEnd();
     }
 }
