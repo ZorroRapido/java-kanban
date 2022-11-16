@@ -22,7 +22,7 @@ public class InMemoryTasksManager implements TasksManager {
     protected HistoryManager historyManager;
 
     public InMemoryTasksManager() {
-        counter = 0;
+        counter = 1;
         tasks = new HashMap<>();
         epics = new HashMap<>();
         subtasks = new HashMap<>();
@@ -117,12 +117,16 @@ public class InMemoryTasksManager implements TasksManager {
     @Override
     public void createTask(Task task) {
         if (!checkIsIntersection(task)) {
-            task.setId(counter);
-            counter++;
-            tasks.put(task.getId(), task);
-            prioritizedTasks.add(task);
+            if (tasks.containsKey(task.getId())) {
+                updateTask(task);
+            } else {
+                task.setId(counter);
+                counter++;
+                tasks.put(task.getId(), task);
+                prioritizedTasks.add(task);
+            }
         }
-    }
+    } // 0 1 : 0
 
     @Override
     public void createEpic(Epic epic) {
@@ -226,6 +230,12 @@ public class InMemoryTasksManager implements TasksManager {
             }
         }
         return epicSubtasks;
+    }
+
+    @Override
+    public ArrayList<Subtask> getEpicSubtasks(int id) {
+        Epic epic = epics.get(id);
+        return getSubtasksByEpic(epic);
     }
 
     @Override

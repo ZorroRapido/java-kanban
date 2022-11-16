@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -123,7 +124,7 @@ public abstract class TasksManagerTest<T extends TasksManager> {
 
         assertNotNull(tasks, "Задачи не возвращаются.");
         assertEquals(1, tasks.size(), "Неверное количество задач.");
-        assertEquals(task, tasks.get(0), "Задачи не совпадают.");
+        assertEquals(task, tasks.get(1), "Задачи не совпадают.");
     }
 
     @Test
@@ -146,7 +147,7 @@ public abstract class TasksManagerTest<T extends TasksManager> {
 
         assertNotNull(epics, "Эпики не возвращаются.");
         assertEquals(1, epics.size(), "Неверное количество эпиков.");
-        assertEquals(epic, epics.get(0), "Эпики не совпадают.");
+        assertEquals(epic, epics.get(1), "Эпики не совпадают.");
     }
 
     @Test
@@ -516,7 +517,7 @@ public abstract class TasksManagerTest<T extends TasksManager> {
         manager.createTask(secondTask);
 
         assertEquals(1, manager.getTasks().size(), "Неверное количество задач.");
-        assertEquals(firstTask, manager.getTasks().get(0), "В список добавлена неверная задача.");
+        assertEquals(firstTask, manager.getTasks().get(1), "В список добавлена неверная задача.");
     }
 
     @Test
@@ -532,7 +533,7 @@ public abstract class TasksManagerTest<T extends TasksManager> {
         manager.createTask(secondTask);
 
         assertEquals(1, manager.getTasks().size(), "Неверное количество задач.");
-        assertEquals(firstTask, manager.getTasks().get(0), "В список добавлена неверная задача.");
+        assertEquals(firstTask, manager.getTasks().get(1), "В список добавлена неверная задача.");
     }
 
     @Test
@@ -548,7 +549,7 @@ public abstract class TasksManagerTest<T extends TasksManager> {
         manager.createTask(secondTask);
 
         assertEquals(1, manager.getTasks().size(), "Неверное количество задач.");
-        assertEquals(firstTask, manager.getTasks().get(0), "В список добавлена неверная задача.");
+        assertEquals(firstTask, manager.getTasks().get(firstTask.getId()), "В список добавлена неверная задача.");
     }
 
     @Test
@@ -562,8 +563,8 @@ public abstract class TasksManagerTest<T extends TasksManager> {
         manager.createTask(secondTask);
 
         assertEquals(2, manager.getTasks().size(), "Неверное количество задач.");
-        assertEquals(firstTask, manager.getTasks().get(0), "В список добавлена неверная задача.");
-        assertEquals(secondTask, manager.getTasks().get(1), "В список добавлена неверная задача.");
+        assertEquals(firstTask, manager.getTasks().get(firstTask.getId()), "В список добавлена неверная задача.");
+        assertEquals(secondTask, manager.getTasks().get(secondTask.getId()), "В список добавлена неверная задача.");
     }
 
     @Test
@@ -582,7 +583,7 @@ public abstract class TasksManagerTest<T extends TasksManager> {
         manager.createSubtask(secondSubtask);
 
         assertEquals(1, manager.getSubtasks().size(), "Неверное количество подзадач.");
-        assertEquals(firstSubtask, manager.getSubtasks().get(1), "В список добавлена неверная подзадача.");
+        assertEquals(firstSubtask, manager.getSubtasks().get(firstSubtask.getId()), "В список добавлена неверная подзадача.");
     }
 
     @Test
@@ -601,7 +602,7 @@ public abstract class TasksManagerTest<T extends TasksManager> {
         manager.createSubtask(secondSubtask);
 
         assertEquals(1, manager.getSubtasks().size(), "Неверное количество подзадач.");
-        assertEquals(firstSubtask, manager.getSubtasks().get(1), "В список добавлена неверная подзадача.");
+        assertEquals(firstSubtask, manager.getSubtasks().get(firstSubtask.getId()), "В список добавлена неверная подзадача.");
     }
 
     @Test
@@ -620,7 +621,7 @@ public abstract class TasksManagerTest<T extends TasksManager> {
         manager.createSubtask(secondSubtask);
 
         assertEquals(1, manager.getSubtasks().size(), "Неверное количество подзадач.");
-        assertEquals(firstSubtask, manager.getSubtasks().get(1), "В список добавлена неверная подзадача.");
+        assertEquals(firstSubtask, manager.getSubtasks().get(firstSubtask.getId()), "В список добавлена неверная подзадача.");
     }
 
     @Test
@@ -673,7 +674,7 @@ public abstract class TasksManagerTest<T extends TasksManager> {
 
         final List<Task> history = manager.getHistory();
         assertEquals(1, history.size(), "Неверный размер истории.");
-        assertEquals(task, history.get(0), "Неверная задача в истории.");
+        assertTrue(history.contains(task), "История не содержит нужную задачу.");
     }
 
     @Test
@@ -693,7 +694,8 @@ public abstract class TasksManagerTest<T extends TasksManager> {
 
         final List<Task> history = manager.getHistory();
         assertEquals(1, history.size(), "Неверный размер истории.");
-        assertEquals(subtask, history.get(0), "Неверная подзадача в истории.");
+        assertTrue(history.contains(subtask), "История не содержит нужную подзадачу.");
+        assertFalse(history.contains(task), "История содержит удаленную задачу.");
     }
 
     @Test
