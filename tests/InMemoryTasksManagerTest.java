@@ -65,8 +65,8 @@ public class InMemoryTasksManagerTest extends TasksManagerTest<InMemoryTasksMana
 
     @Override
     @Test
-    public void getTasksTest() {
-        super.getTasksTest();
+    public void getTasks() {
+        super.getTasks();
     }
 
     @Override

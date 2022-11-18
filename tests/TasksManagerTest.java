@@ -174,7 +174,7 @@ public abstract class TasksManagerTest<T extends TasksManager> {
     }
 
     @Test
-    public void getTasksTest() {
+    public void getTasks() {
         Task firstTask = new Task(TASK_NAME, TASK_DESC);
         Task secondTask = new Task(TASK_NAME, TASK_DESC);
 

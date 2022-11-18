@@ -22,7 +22,10 @@ import static managers.CSVFormat.historyToString;
 import static managers.CSVFormat.fromString;
 
 public class FileBackedTasksManager extends InMemoryTasksManager {
-    private final File file;
+    private File file;
+
+    public FileBackedTasksManager() {
+    }
 
     public FileBackedTasksManager(File file) {
         this.file = file;
