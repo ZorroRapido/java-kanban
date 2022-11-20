@@ -3,7 +3,7 @@ package tasks;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Optional;
+import java.util.Objects;
 
 public class Task {
     private int id;
@@ -44,6 +44,24 @@ public class Task {
                 ", startTime='" + startTime + "'" +
                 ", duration=" + duration +
                 "}";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Task otherTask = (Task) obj;
+        return Objects.equals(type, otherTask.type) &&
+                Objects.equals(name, otherTask.name) &&
+                Objects.equals(description, otherTask.description) &&
+                Objects.equals(status, otherTask.status) &&
+                Objects.equals(startTime, otherTask.startTime) &&
+                Objects.equals(duration, otherTask.duration);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, type, name, description, status, startTime, duration);
     }
 
     public int getId() {

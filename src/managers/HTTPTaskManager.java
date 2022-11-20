@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import server.KVTaskClient;
 import tasks.Epic;
@@ -31,20 +32,20 @@ public class HTTPTaskManager extends FileBackedTasksManager {
         Type subtasksIncludedType = new TypeToken<ArrayList<Subtask>>() {}.getType();
 
         Gson taskGson = new GsonBuilder()
-                // .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
                 .create();
         Gson epicGson = new GsonBuilder()
                 .registerTypeAdapter(subtasksIncludedType, new SubtasksIncludedAdapter())
-                // .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
                 .create();
         Gson subtaskGson = new GsonBuilder()
                 .registerTypeAdapter(Epic.class, new EpicAdapter())
-                // .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
                 .create();
 
         if (!tasks.isEmpty()) {
             String serializedTasks = taskGson.toJson(tasks);
-            client.put("tasks", serializedTasks);
+            client.put("main/tasks", serializedTasks);
         }
 
         if (!epics.isEmpty()) {
@@ -64,26 +65,30 @@ public class HTTPTaskManager extends FileBackedTasksManager {
         }
     }
 
-//    static class LocalDateTimeAdapter extends TypeAdapter<LocalDateTime> {
-//        private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-//
-//        @Override
-//        public void write(final JsonWriter jsonWriter, final LocalDateTime localDateTime) throws IOException {
-//            if (localDateTime != null) {
-//                jsonWriter.value(localDateTime.format(formatter));
-//            }
-//        }
-//
-//        @Override
-//        public LocalDateTime read(final JsonReader jsonReader) throws IOException {
-//            if (jsonReader.nextString() != null) {
-//                return LocalDateTime.parse(jsonReader.nextString(), formatter);
-//            }
-//            return null;
-//        }
-//    }
+    static class LocalDateTimeAdapter extends TypeAdapter<LocalDateTime> {
+        private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy|HH:mm");
 
-    static class SubtasksIncludedAdapter extends TypeAdapter<ArrayList<Subtask>> {
+        @Override
+        public void write(final JsonWriter jsonWriter, final LocalDateTime localDateTime) throws IOException {
+            if (localDateTime == null) {
+                jsonWriter.nullValue();
+            } else {
+                jsonWriter.value(localDateTime.format(formatter));
+            }
+        }
+
+        @Override
+        public LocalDateTime read(final JsonReader jsonReader) throws IOException {
+            if (jsonReader.peek() == JsonToken.NULL) {
+                jsonReader.nextNull();
+                return null;
+            } else {
+                return LocalDateTime.parse(jsonReader.nextString(), formatter);
+            }
+        }
+    }
+
+    public static class SubtasksIncludedAdapter extends TypeAdapter<ArrayList<Subtask>> {
         @Override
         public void write(final JsonWriter jsonWriter, final ArrayList<Subtask> subtasks) throws IOException {
             List<String> ids = subtasks.stream()
@@ -130,7 +135,7 @@ public class HTTPTaskManager extends FileBackedTasksManager {
                 .registerTypeAdapter(subtasksIncludedType, new SubtasksIncludedAdapter())
                 .create();
 
-        HashMap<Integer, Task> deserializedTasks = taskGson.fromJson(manager.client.load("tasks"), tasksType);
+        HashMap<Integer, Task> deserializedTasks = taskGson.fromJson(manager.client.load("main/tasks"), tasksType);
         HashMap<Integer, Epic> deserializedEpics = epicGson.fromJson(manager.client.load("epics"), epicsType);
 
         TypeAdapter<Epic> epicAdapter = new TypeAdapter<>() {

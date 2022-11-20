@@ -17,8 +17,8 @@ public class KVServer {
 	private final HttpServer server;
 	private final Map<String, String> data = new HashMap<>();
 
-	public KVServer(int serverPort) throws IOException {
-		port = serverPort;
+	public KVServer() throws IOException {
+		port = 8078;
 		apiToken = generateApiToken();
 		server = HttpServer.create(new InetSocketAddress("localhost", port), 0);
 		server.createContext("/register", this::register);
@@ -26,8 +26,8 @@ public class KVServer {
 		server.createContext("/load", this::load);
 	}
 
-	public KVServer() throws IOException {
-		port = 8078;
+	public KVServer(int serverPort) throws IOException {
+		port = serverPort;
 		apiToken = generateApiToken();
 		server = HttpServer.create(new InetSocketAddress("localhost", port), 0);
 		server.createContext("/register", this::register);

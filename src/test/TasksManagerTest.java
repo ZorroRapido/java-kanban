@@ -1,3 +1,5 @@
+package test;
+
 import jdk.jfr.Description;
 import managers.TasksManager;
 import org.junit.jupiter.api.Assertions;
@@ -124,7 +126,7 @@ public abstract class TasksManagerTest<T extends TasksManager> {
 
         assertNotNull(tasks, "Задачи не возвращаются.");
         assertEquals(1, tasks.size(), "Неверное количество задач.");
-        assertEquals(task, tasks.get(1), "Задачи не совпадают.");
+        assertEquals(task, tasks.get(task.getId()), "Задачи не совпадают.");
     }
 
     @Test
@@ -174,7 +176,7 @@ public abstract class TasksManagerTest<T extends TasksManager> {
     }
 
     @Test
-    public void getTasks() {
+    public void getTasksTest() {
         Task firstTask = new Task(TASK_NAME, TASK_DESC);
         Task secondTask = new Task(TASK_NAME, TASK_DESC);
 
@@ -502,8 +504,6 @@ public abstract class TasksManagerTest<T extends TasksManager> {
         assertEquals(0, manager.getSubtasks().size(), "Неверное количество подзадач.");
     }
 
-    // Тесты на работу с историей ...
-
     @Test
     @Description("Создание двух пересекающихся задач, когда первая начинается после второй, но заканчивается раньше " +
             "её завершения")
@@ -741,6 +741,4 @@ public abstract class TasksManagerTest<T extends TasksManager> {
         assertEquals(epic, history.get(1), "Неверный эпик в истории.");
         assertEquals(task, history.get(0), "Неверная задача в истории.");
     }
-
-
 }

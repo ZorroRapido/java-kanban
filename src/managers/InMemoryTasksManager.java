@@ -1,14 +1,10 @@
 package managers;
 
-import com.sun.source.tree.Tree;
 import tasks.Epic;
 import tasks.Status;
 import tasks.Subtask;
 import tasks.Task;
 
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 
 public class InMemoryTasksManager implements TasksManager {
@@ -126,7 +122,7 @@ public class InMemoryTasksManager implements TasksManager {
                 prioritizedTasks.add(task);
             }
         }
-    } // 0 1 : 0
+    }
 
     @Override
     public void createEpic(Epic epic) {
@@ -235,7 +231,11 @@ public class InMemoryTasksManager implements TasksManager {
     @Override
     public ArrayList<Subtask> getEpicSubtasks(int id) {
         Epic epic = epics.get(id);
-        return getSubtasksByEpic(epic);
+        if (epic != null) {
+            return getSubtasksByEpic(epic);
+        } else {
+            return null;
+        }
     }
 
     @Override

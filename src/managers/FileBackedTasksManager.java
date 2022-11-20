@@ -17,10 +17,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static managers.CSVFormat.historyFromString;
-import static managers.CSVFormat.historyToString;
-import static managers.CSVFormat.fromString;
-
 public class FileBackedTasksManager extends InMemoryTasksManager {
     private File file;
 
@@ -74,7 +70,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
             }
 
             bw.write("\n");
-            bw.write(historyToString(historyManager));
+            bw.write(CSVFormat.historyToString(historyManager));
         } catch (IOException e) {
             throw new ManagerSaveException(String.format("Произошла ошибка при сохранении данных в файл %s", file.getName()));
         }
@@ -210,7 +206,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
             while (br.ready()) {
                 String line = br.readLine();
                 if (!line.isEmpty()) {
-                    Task task = fromString(line, manager);
+                    Task task = CSVFormat.fromString(line, manager);
                     if (task != null) {
                         switch (task.getType()) {
                             case TASK:
@@ -226,7 +222,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager {
                     }
                 } else {
                     String historyLine = br.readLine();
-                    List<Integer> ids = historyFromString(historyLine);
+                    List<Integer> ids = CSVFormat.historyFromString(historyLine);
 
                     for (Integer id : ids) {
                         if (manager.getTasks().containsKey(id)) {
