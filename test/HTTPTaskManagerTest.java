@@ -1,12 +1,13 @@
-package test;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import managers.HTTPTaskManager;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import server.HttpTaskServer;
 import server.KVServer;
 import tasks.Epic;
@@ -26,7 +27,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
-public class HTTPTaskManagerTest extends test.TasksManagerTest<HTTPTaskManager> {
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+public class HTTPTaskManagerTest extends TasksManagerTest<HTTPTaskManager> {
     protected static KVServer kvServer;
     protected static HttpTaskServer httpTaskServer;
     protected static HttpClient client;
@@ -48,6 +50,7 @@ public class HTTPTaskManagerTest extends test.TasksManagerTest<HTTPTaskManager> 
     }
 
     @Test
+    @Order(3)
     void getTasksEndpointTestNegativeCase() throws IOException, InterruptedException {
         HttpResponse<String> getTasksResponse = getTasks();
 
@@ -56,6 +59,7 @@ public class HTTPTaskManagerTest extends test.TasksManagerTest<HTTPTaskManager> 
     }
 
     @Test
+    @Order(4)
     void getTasksEndpointTestPositiveCase() throws IOException, InterruptedException {
         Task task = new Task(TASK_NAME, TASK_DESC);
 
@@ -73,6 +77,7 @@ public class HTTPTaskManagerTest extends test.TasksManagerTest<HTTPTaskManager> 
     }
 
     @Test
+    @Order(5)
     void getTaskByIdEndpointTestNegativeCase() throws IOException, InterruptedException {
         HttpResponse<String> getTasksResponse = getTaskById(1);
 
@@ -80,13 +85,14 @@ public class HTTPTaskManagerTest extends test.TasksManagerTest<HTTPTaskManager> 
     }
 
     @Test
+    @Order(2)
     void getTaskByIdEndpointTestPositiveCase() throws IOException, InterruptedException {
         Task task = new Task(TASK_NAME, TASK_DESC);
 
         HttpResponse<String> createTaskResponse = createTask(task);
         assertEquals(201, createTaskResponse.statusCode(), "Неверный статус код при создании задачи.");
 
-        HttpResponse<String> getTaskByIdResponse = getTaskById(1);
+        HttpResponse<String> getTaskByIdResponse = getTaskById(2);
         assertEquals(200, getTaskByIdResponse.statusCode(), "Неверный статус-код при запросе задачи по id.");
 
         Task savedTask = new Gson().fromJson(getTaskByIdResponse.body(), Task.class);
@@ -94,10 +100,11 @@ public class HTTPTaskManagerTest extends test.TasksManagerTest<HTTPTaskManager> 
     }
 
     @Test
+    @Order(6)
     void createTaskEndpointTestNegativeCase() throws IOException, InterruptedException {
         HttpRequest createTaskRequest = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.noBody())
-                .uri(URI.create(API_URL + "/main/tasks/task"))
+                .uri(URI.create(API_URL + "/tasks/task"))
                 .build();
 
         HttpResponse<String> createTaskResponse = client.send(createTaskRequest, HttpResponse.BodyHandlers.ofString());
@@ -105,6 +112,7 @@ public class HTTPTaskManagerTest extends test.TasksManagerTest<HTTPTaskManager> 
     }
 
     @Test
+    @Order(7)
     void createTaskEndpointTestPositiveCase() throws IOException, InterruptedException {
         Task firstTask = new Task(TASK_NAME, TASK_DESC);
         Task secondTask = new Task("SecondTaskName", "SecondTaskDescription");
@@ -129,6 +137,7 @@ public class HTTPTaskManagerTest extends test.TasksManagerTest<HTTPTaskManager> 
     }
 
     @Test
+    @Order(1)
     void deleteTaskByIdEndpointTest() throws IOException, InterruptedException {
         Task task = new Task(TASK_NAME, TASK_DESC);
 
@@ -148,6 +157,7 @@ public class HTTPTaskManagerTest extends test.TasksManagerTest<HTTPTaskManager> 
     }
 
     @Test
+    @Order(8)
     void deleteAllTasksEndpointTest() throws IOException, InterruptedException {
         Task firstTask = new Task(TASK_NAME, TASK_DESC);
         Task secondTask = new Task("SecondTaskName", "SecondTaskDescription");
@@ -177,7 +187,7 @@ public class HTTPTaskManagerTest extends test.TasksManagerTest<HTTPTaskManager> 
 
         HttpRequest createTaskRequest = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(serializedTask))
-                .uri(URI.create(API_URL + "/main/tasks/task"))
+                .uri(URI.create(API_URL + "/tasks/task"))
                 .build();
 
         return client.send(createTaskRequest, HttpResponse.BodyHandlers.ofString());
@@ -188,7 +198,7 @@ public class HTTPTaskManagerTest extends test.TasksManagerTest<HTTPTaskManager> 
 
         HttpRequest createEpicRequest = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(serializedEpic))
-                .uri(URI.create(API_URL + "/main/tasks/epic"))
+                .uri(URI.create(API_URL + "/tasks/epic"))
                 .build();
 
         return client.send(createEpicRequest, HttpResponse.BodyHandlers.ofString());
@@ -199,7 +209,7 @@ public class HTTPTaskManagerTest extends test.TasksManagerTest<HTTPTaskManager> 
 
         HttpRequest createSubtaskRequest = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(serializedSubtask))
-                .uri(URI.create(API_URL + "/main/tasks/subtask"))
+                .uri(URI.create(API_URL + "/tasks/subtask"))
                 .build();
 
         return client.send(createSubtaskRequest, HttpResponse.BodyHandlers.ofString());
@@ -208,7 +218,7 @@ public class HTTPTaskManagerTest extends test.TasksManagerTest<HTTPTaskManager> 
     private HttpResponse<String> getTasks() throws IOException, InterruptedException {
         HttpRequest getTasksRequest = HttpRequest.newBuilder()
                 .GET()
-                .uri(URI.create(API_URL + "/main/tasks/task"))
+                .uri(URI.create(API_URL + "/tasks/task"))
                 .build();
 
         return client.send(getTasksRequest, HttpResponse.BodyHandlers.ofString());
@@ -217,7 +227,7 @@ public class HTTPTaskManagerTest extends test.TasksManagerTest<HTTPTaskManager> 
     private HttpResponse<String> getEpics() throws IOException, InterruptedException {
         HttpRequest getEpicsRequest = HttpRequest.newBuilder()
                 .GET()
-                .uri(URI.create(API_URL + "/main/tasks/epic"))
+                .uri(URI.create(API_URL + "/tasks/epic"))
                 .build();
 
         return client.send(getEpicsRequest, HttpResponse.BodyHandlers.ofString());
@@ -226,7 +236,7 @@ public class HTTPTaskManagerTest extends test.TasksManagerTest<HTTPTaskManager> 
     private HttpResponse<String> getSubtasks() throws IOException, InterruptedException {
         HttpRequest getSubtasksRequest = HttpRequest.newBuilder()
                 .GET()
-                .uri(URI.create(API_URL + "/main/tasks/subtask"))
+                .uri(URI.create(API_URL + "/tasks/subtask"))
                 .build();
 
         return client.send(getSubtasksRequest, HttpResponse.BodyHandlers.ofString());
@@ -235,7 +245,7 @@ public class HTTPTaskManagerTest extends test.TasksManagerTest<HTTPTaskManager> 
     private HttpResponse<String> getTaskById(int id) throws IOException, InterruptedException {
         HttpRequest getTaskRequest = HttpRequest.newBuilder()
                 .GET()
-                .uri(URI.create(API_URL + "/main/tasks/task/?id=" + id))
+                .uri(URI.create(API_URL + "/tasks/task/?id=" + id))
                 .build();
 
         return client.send(getTaskRequest, HttpResponse.BodyHandlers.ofString());
@@ -244,7 +254,7 @@ public class HTTPTaskManagerTest extends test.TasksManagerTest<HTTPTaskManager> 
     private HttpResponse<String> getEpicById(int id) throws IOException, InterruptedException {
         HttpRequest getEpicRequest = HttpRequest.newBuilder()
                 .GET()
-                .uri(URI.create(API_URL + "/main/tasks/epic/?id=" + id))
+                .uri(URI.create(API_URL + "/tasks/epic/?id=" + id))
                 .build();
 
         return client.send(getEpicRequest, HttpResponse.BodyHandlers.ofString());
@@ -253,7 +263,7 @@ public class HTTPTaskManagerTest extends test.TasksManagerTest<HTTPTaskManager> 
     private HttpResponse<String> getSubtaskById(int id) throws IOException, InterruptedException {
         HttpRequest getSubtaskRequest = HttpRequest.newBuilder()
                 .GET()
-                .uri(URI.create(API_URL + "/main/tasks/subtask/?id=" + id))
+                .uri(URI.create(API_URL + "/tasks/subtask/?id=" + id))
                 .build();
 
         return client.send(getSubtaskRequest, HttpResponse.BodyHandlers.ofString());
@@ -262,7 +272,8 @@ public class HTTPTaskManagerTest extends test.TasksManagerTest<HTTPTaskManager> 
     private HttpResponse<String> deleteTaskById(int id) throws IOException, InterruptedException {
         HttpRequest deleteTaskByIdRequest = HttpRequest.newBuilder()
                 .DELETE()
-                .uri(URI.create(API_URL + "/main/tasks/task/?id=" + id))
+                .uri(URI.create(API_URL + "/tasks/task/?id=" + id))
+                .version(HttpClient.Version.HTTP_1_1)
                 .build();
 
         return client.send(deleteTaskByIdRequest, HttpResponse.BodyHandlers.ofString());
@@ -271,7 +282,7 @@ public class HTTPTaskManagerTest extends test.TasksManagerTest<HTTPTaskManager> 
     private HttpResponse<String> deleteEpicById(int id) throws IOException, InterruptedException {
         HttpRequest deleteEpicByIdRequest = HttpRequest.newBuilder()
                 .DELETE()
-                .uri(URI.create(API_URL + "/main/tasks/epic/?id=" + id))
+                .uri(URI.create(API_URL + "/tasks/epic/?id=" + id))
                 .build();
 
         return client.send(deleteEpicByIdRequest, HttpResponse.BodyHandlers.ofString());
@@ -280,7 +291,7 @@ public class HTTPTaskManagerTest extends test.TasksManagerTest<HTTPTaskManager> 
     private HttpResponse<String> deleteSubtaskById(int id) throws IOException, InterruptedException {
         HttpRequest deleteSubtaskByIdRequest = HttpRequest.newBuilder()
                 .DELETE()
-                .uri(URI.create(API_URL + "/main/tasks/subtask/?id=" + id))
+                .uri(URI.create(API_URL + "/tasks/subtask/?id=" + id))
                 .build();
 
         return client.send(deleteSubtaskByIdRequest, HttpResponse.BodyHandlers.ofString());
@@ -289,7 +300,7 @@ public class HTTPTaskManagerTest extends test.TasksManagerTest<HTTPTaskManager> 
     private HttpResponse<String> deleteAllTasks() throws IOException, InterruptedException {
         HttpRequest deleteAllTasksRequest = HttpRequest.newBuilder()
                 .DELETE()
-                .uri(URI.create(API_URL + "/main/tasks/task"))
+                .uri(URI.create(API_URL + "/tasks/task"))
                 .build();
 
         return client.send(deleteAllTasksRequest, HttpResponse.BodyHandlers.ofString());
@@ -298,7 +309,7 @@ public class HTTPTaskManagerTest extends test.TasksManagerTest<HTTPTaskManager> 
     private HttpResponse<String> deleteAllEpics() throws IOException, InterruptedException {
         HttpRequest deleteAllEpicsRequest = HttpRequest.newBuilder()
                 .DELETE()
-                .uri(URI.create(API_URL + "/main/tasks/epic"))
+                .uri(URI.create(API_URL + "/tasks/epic"))
                 .build();
 
         return client.send(deleteAllEpicsRequest, HttpResponse.BodyHandlers.ofString());
@@ -307,7 +318,7 @@ public class HTTPTaskManagerTest extends test.TasksManagerTest<HTTPTaskManager> 
     private HttpResponse<String> deleteAllSubtasks() throws IOException, InterruptedException {
         HttpRequest deleteAllSubtasksRequest = HttpRequest.newBuilder()
                 .DELETE()
-                .uri(URI.create(API_URL + "/main/tasks/subtask"))
+                .uri(URI.create(API_URL + "/tasks/subtask"))
                 .build();
 
         return client.send(deleteAllSubtasksRequest, HttpResponse.BodyHandlers.ofString());
@@ -316,7 +327,7 @@ public class HTTPTaskManagerTest extends test.TasksManagerTest<HTTPTaskManager> 
     private HttpResponse<String> getEpicSubtasks(int id) throws IOException, InterruptedException {
         HttpRequest getEpicSubtasksRequest = HttpRequest.newBuilder()
                 .GET()
-                .uri(URI.create(API_URL + "/main/tasks/subtask/epic/?id=" + id))
+                .uri(URI.create(API_URL + "/tasks/subtask/epic/?id=" + id))
                 .build();
 
         return client.send(getEpicSubtasksRequest, HttpResponse.BodyHandlers.ofString());
@@ -325,7 +336,7 @@ public class HTTPTaskManagerTest extends test.TasksManagerTest<HTTPTaskManager> 
     private HttpResponse<String> getPrioritizedTasks() throws IOException, InterruptedException {
         HttpRequest getEpicSubtasksRequest = HttpRequest.newBuilder()
                 .GET()
-                .uri(URI.create(API_URL + "/main/tasks"))
+                .uri(URI.create(API_URL + "/tasks"))
                 .build();
 
         return client.send(getEpicSubtasksRequest, HttpResponse.BodyHandlers.ofString());
@@ -334,8 +345,6 @@ public class HTTPTaskManagerTest extends test.TasksManagerTest<HTTPTaskManager> 
     @AfterEach
     public void clear() throws IOException, InterruptedException {
         deleteAllTasks();
-
-        // добавить очистку подзадач и эпиков
     }
 
     @AfterAll

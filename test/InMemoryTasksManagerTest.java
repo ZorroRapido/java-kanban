@@ -1,24 +1,9 @@
-package test;
-
-import managers.FileBackedTasksManager;
+import managers.InMemoryTasksManager;
 import org.junit.jupiter.api.Test;
-import tasks.Epic;
-import tasks.Subtask;
-import tasks.Task;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-public class FileBackedTasksManagerTest extends TasksManagerTest<FileBackedTasksManager> {
-    protected FileBackedTasksManagerTest() {
-        super(new FileBackedTasksManager(new File("data.csv")));
+public class InMemoryTasksManagerTest extends TasksManagerTest<InMemoryTasksManager> {
+    public InMemoryTasksManagerTest() {
+        super(new InMemoryTasksManager());
     }
 
     @Override
@@ -297,7 +282,6 @@ public class FileBackedTasksManagerTest extends TasksManagerTest<FileBackedTasks
         super.createNonintersectingSubtasks();
     }
 
-
     @Override
     @Test
     public void getHistory() {
@@ -332,60 +316,5 @@ public class FileBackedTasksManagerTest extends TasksManagerTest<FileBackedTasks
     @Test
     public void getHistoryAfterTaskDeleteEnd() {
         super.getHistoryAfterTaskDeleteEnd();
-    }
-
-    @Test
-    public void save() throws IOException {
-        Task task = new Task(TASK_NAME, TASK_DESC);
-        Epic epic = new Epic(EPIC_NAME, EPIC_DESC);
-        Subtask subtask = new Subtask(SUBTASK_NAME, SUBTASK_DESC, epic);
-
-        manager.createTask(task);
-        manager.createEpic(epic);
-        manager.createSubtask(subtask);
-
-        manager.getSubtaskById(subtask.getId());
-        manager.getTaskById(task.getId());
-
-        final HashMap<Integer, Task> tasks = manager.getTasks();
-        final HashMap<Integer, Epic> epics = manager.getEpics();
-        final HashMap<Integer, Subtask> subtasks = manager.getSubtasks();
-
-        final List<Task> history = manager.getHistory();
-
-        manager.save();
-        FileBackedTasksManager.loadFromFile(new File("data.csv"));
-        assertEquals(history, manager.getHistory(), "История, загруженная из файла - неверна.");
-        assertEquals(tasks, manager.getTasks(), "Задачи, загруженный из файла - неверны.");
-        assertEquals(epics, manager.getEpics(), "Эпики, загруженный из файла - неверны.");
-        assertEquals(subtasks, manager.getSubtasks(), "Подзадачи, загруженный из файла - неверны.");
-    }
-
-    @Test
-    public void saveEmptyTaskList() throws IOException {
-        manager.save();
-        FileBackedTasksManager.loadFromFile(new File("data.csv"));
-        assertTrue(manager.getTasks().isEmpty(), "Неверное количество задач.");
-        assertTrue(manager.getEpics().isEmpty(), "Неверное количество эпиков.");
-        assertTrue(manager.getSubtasks().isEmpty(), "Неверное количество подзадач.");
-    }
-
-    @Test
-    public void saveWithEpicNoSubtasks() throws IOException {
-        Epic epic = new Epic(EPIC_NAME, EPIC_DESC);
-        manager.createEpic(epic);
-
-        manager.save();
-        FileBackedTasksManager.loadFromFile(new File("data.csv"));
-
-        assertEquals(epic, manager.getEpics().get(0), "Эпик не найден.");
-        assertTrue(manager.getHistory().isEmpty(), "История не пуста.");
-    }
-
-    @Test
-    public void saveWithEmptyHistory() throws IOException {
-        manager.save();
-        FileBackedTasksManager.loadFromFile(new File("data.csv"));
-        assertTrue(manager.getHistory().isEmpty(), "История просмотра не пуста.");
     }
 }

@@ -1,5 +1,3 @@
-package test;
-
 import jdk.jfr.Description;
 import managers.TasksManager;
 import org.junit.jupiter.api.Assertions;
@@ -19,15 +17,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public abstract class TasksManagerTest<T extends TasksManager> {
+abstract class TasksManagerTest<T extends TasksManager> {
     protected final T manager;
-    protected static final String TASK_NAME = "TaskName";
-    protected static final String TASK_DESC = "TaskDescription";
-    protected static final String EPIC_NAME = "EpicName";
-    protected static final String EPIC_DESC = "EpicDescription";
-    protected static final String SUBTASK_NAME = "Subtask";
-    protected static final String SUBTASK_DESC = "SubtaskDescription";
-
+    public static final String TASK_NAME = "TaskName";
+    public static final String TASK_DESC = "TaskDescription";
+    public static final String EPIC_NAME = "EpicName";
+    public static final String EPIC_DESC = "EpicDescription";
+    public static final String SUBTASK_NAME = "Subtask";
+    public static final String SUBTASK_DESC = "SubtaskDescription";
 
     protected TasksManagerTest(T manager) {
         this.manager = manager;

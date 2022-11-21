@@ -143,22 +143,6 @@ public class HttpTaskServer {
                                 Task task = gson.fromJson(body, Task.class);
                                 manager.createTask(task);
                             }
-                        } else if (path.equals("/tasks/subtask")) {
-                            System.out.println("POST /tasks/subtask Body: {...}");
-
-                            InputStream inputStream = httpExchange.getRequestBody();
-
-                            String body = new String(inputStream.readAllBytes(), DEFAULT_CHARSET);
-
-                            if (body.equals("")) {
-                                httpExchange.sendResponseHeaders(400, 0);
-                            } else {
-                                httpExchange.sendResponseHeaders(201, 0);
-                                Subtask subtask = gson.fromJson(body, Subtask.class);
-                                manager.createSubtask(subtask);
-                            }
-                        } else {
-                            httpExchange.sendResponseHeaders(400, 0);
                         }
                         break;
                     case "DELETE":
@@ -174,6 +158,10 @@ public class HttpTaskServer {
                             manager.deleteTask(Integer.parseInt(id));
 
                             httpExchange.sendResponseHeaders(200, 0);
+
+                            try (OutputStream os = httpExchange.getResponseBody()) {
+
+                            }
                         } else {
                             httpExchange.sendResponseHeaders(400, 0);
                         }
