@@ -31,14 +31,14 @@ public class HttpTaskServer {
         port = serverPort;
         httpServer = HttpServer.create();
         httpServer.bind(new InetSocketAddress(port), 0);
-        httpServer.createContext("/main/tasks", new TasksHandler());
+        httpServer.createContext("/tasks", new TasksHandler());
     }
 
     public HttpTaskServer() throws IOException {
         port = 8080;
         httpServer = HttpServer.create();
         httpServer.bind(new InetSocketAddress(port), 0);
-        httpServer.createContext("/main/tasks", new TasksHandler());
+        httpServer.createContext("/tasks", new TasksHandler());
     }
 
     public void start() {
@@ -61,7 +61,7 @@ public class HttpTaskServer {
             try {
                 switch (httpExchange.getRequestMethod()) {
                     case "GET":
-                        if ((path.equals("/main/tasks/task")) && (query == null)) {
+                        if ((path.equals("/tasks/task")) && (query == null)) {
                             System.out.println("GET /tasks/task");
 
                             HashMap<Integer, Task> tasks = manager.getTasks();
@@ -72,7 +72,7 @@ public class HttpTaskServer {
                             try (OutputStream os = httpExchange.getResponseBody()) {
                                 os.write(response.getBytes());
                             }
-                        } else if ((path.equals("/main/tasks/task/")) && (getParams(query).containsKey("id"))) {
+                        } else if ((path.equals("/tasks/task/")) && (getParams(query).containsKey("id"))) {
                             System.out.println("GET /tasks/task/?id=");
 
                             String id = getParams(query).get("id");
@@ -87,7 +87,7 @@ public class HttpTaskServer {
                             } else {
                                 httpExchange.sendResponseHeaders(404, 0);
                             }
-                        } else if ((path.equals("/main/tasks/subtask/epic/")) && (getParams(query).containsKey("id"))) {
+                        } else if ((path.equals("/tasks/subtask/epic/")) && (getParams(query).containsKey("id"))) {
                             System.out.println("GET /tasks/subtask/epic/?id=");
 
                             String id = getParams(query).get("id");
@@ -102,7 +102,7 @@ public class HttpTaskServer {
                             } else {
                                 httpExchange.sendResponseHeaders(404, 0);
                             }
-                        } else if ((path.equals("/main/tasks/history")) && (query == null)) {
+                        } else if ((path.equals("/tasks/history")) && (query == null)) {
                             System.out.println("GET /tasks/history");
 
                             List<Task> history = manager.getHistory();
@@ -113,7 +113,7 @@ public class HttpTaskServer {
                             try (OutputStream os = httpExchange.getResponseBody()) {
                                 os.write(response.getBytes());
                             }
-                        } else if (path.equals("/main/tasks") && (query == null)) {
+                        } else if (path.equals("/tasks") && (query == null)) {
                             System.out.println("GET /tasks");
 
                             TreeSet<Task> prioritizedTasks = manager.getPrioritizedTasks();
@@ -129,7 +129,7 @@ public class HttpTaskServer {
                         }
                         break;
                     case "POST":
-                        if (path.equals("/main/tasks/task")) {
+                        if (path.equals("/tasks/task")) {
                             System.out.println("POST /tasks/task Body: {...}");
 
                             InputStream inputStream = httpExchange.getRequestBody();
@@ -143,7 +143,7 @@ public class HttpTaskServer {
                                 Task task = gson.fromJson(body, Task.class);
                                 manager.createTask(task);
                             }
-                        } else if (path.equals("/main/tasks/subtask")) {
+                        } else if (path.equals("/tasks/subtask")) {
                             System.out.println("POST /tasks/subtask Body: {...}");
 
                             InputStream inputStream = httpExchange.getRequestBody();
@@ -162,12 +162,12 @@ public class HttpTaskServer {
                         }
                         break;
                     case "DELETE":
-                        if ((path.equals("/main/tasks/task")) && (query == null)) {
+                        if ((path.equals("/tasks/task")) && (query == null)) {
                             System.out.println("DELETE /tasks/task");
 
                             httpExchange.sendResponseHeaders(200, 0);
                             manager.deleteAllTasks();
-                        } else if ((path.equals("/main/tasks/task/")) && (getParams(query).containsKey("id"))) {
+                        } else if ((path.equals("/tasks/task/")) && (getParams(query).containsKey("id"))) {
                             System.out.println("DELETE /tasks/task/id?=");
 
                             String id = getParams(query).get("id");
